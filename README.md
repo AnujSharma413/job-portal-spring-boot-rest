@@ -1,12 +1,19 @@
 # Job Portal – Spring Boot REST API (Backend Focused)
 
 ## 📌 Overview
-This project represents the **backend-focused evolution** of my Job Portal application.
-After learning Spring MVC with JSP-based UI, this version was built to understand
+
+This project represents the **backend-focused evolution** of my Job Portal application.  
+After learning Spring MVC with JSP-based UI, this version was built to understand  
 **RESTful backend development**, **database integration**, and **frontend-backend separation**.
 
-The backend is implemented using **Spring Boot REST APIs** and tested using both
-**Postman** and a **React frontend**.
+The backend is implemented using **Spring Boot REST APIs** and tested using  
+**Postman** and an **externally provided React frontend** (course-provided UI).
+
+The React frontend was **not developed by me**, but was used strictly for  
+**API integration testing and real-world client–server interaction practice**.
+
+After implementing core APIs and frontend integration, **Spring Security was added**  
+to secure REST endpoints and understand real-world backend authentication and authorization flow.
 
 ---
 
@@ -17,9 +24,9 @@ The backend is implemented using **Spring Boot REST APIs** and tested using both
 - CRUD operations using Spring Data JPA
 - PostgreSQL database integration
 - API testing using Postman
-- Frontend-backend integration using React
-- CORS configuration for frontend communication
-- Clean separation of concerns (Backend only repo)
+- Frontend–backend integration using an externally provided React UI (for testing purposes)
+- CORS configuration to allow communication with external frontend clients
+- Clean separation of concerns with a backend-only repository
 
 ---
 
@@ -30,8 +37,13 @@ The backend is implemented using **Spring Boot REST APIs** and tested using both
 - Spring Boot 3
 - Spring Web (REST)
 - Spring Data JPA
+- Spring Security
 - PostgreSQL
 - Maven
+
+### Security
+- Spring Security (Basic Authentication)
+- BCrypt Password Encoder
 
 ### Testing & Integration
 - Postman (API testing)
@@ -44,6 +56,8 @@ The backend is implemented using **Spring Boot REST APIs** and tested using both
 ```text
 React UI / Postman
         ↓
+ Spring Security Filter Chain
+        ↓
    REST Controller
         ↓
      Service Layer
@@ -51,26 +65,36 @@ React UI / Postman
    JPA Repository
         ↓
  PostgreSQL Database
-```
-- REST Controllers expose APIs
+ ```
+- Spring Security filter intercepts incoming requests
+
+- Authentication is handled before reaching controllers
+
+- REST Controllers expose secured APIs
+
 - Service layer contains business logic
+
 - Repository layer handles database operations
+
 - PostgreSQL is used for persistent storage
 
 ---
 
 ## 🔗 REST API Endpoints
 
-| Method | Endpoint                     | Description                     |
-|------|------------------------------|---------------------------------|
-| GET  | /jobPosts                    | Get all job posts                |
-| GET  | /jobPost/{postId}            | Get job by ID                    |
-| GET  | /jobPosts/keyword/{keyword}  | Search jobs by keyword           |
-| POST | /jobPost                     | Add new job                      |
-| PUT  | /jobPost                     | Update existing job              |
-| DELETE | /jobPost/{postId}          | Delete job by ID                 |
-| GET  | /load                        | Load sample job data             |
+> All APIs are secured using **Spring Security (Basic Authentication)**  
+> except the **user registration endpoint**, which is publicly accessible.
 
+| Method | Endpoint                     | Description                          | Security |
+|------|------------------------------|--------------------------------------|----------|
+| POST | /register                    | Register new user (BCrypt password)  | 🔓 Public |
+| GET  | /jobPosts                    | Get all job posts                    | 🔐 Secured |
+| GET  | /jobPost/{postId}            | Get job by ID                        | 🔐 Secured |
+| GET  | /jobPosts/keyword/{keyword}  | Search jobs by keyword               | 🔐 Secured |
+| POST | /jobPost                     | Add new job                          | 🔐 Secured |
+| PUT  | /jobPost                     | Update existing job                  | 🔐 Secured |
+| DELETE | /jobPost/{postId}          | Delete job by ID                     | 🔐 Secured |
+| GET  | /load                        | Load sample job data                 | 🔐 Secured |
 ---
 
 ## 📸 API & Integration Proof
@@ -78,60 +102,73 @@ React UI / Postman
 ### 🧪 Database (PostgreSQL)
 ![Jobs Table](screenshots/postgres/jobs-table.png)
 
-### 🔗 Postman API Testing
-🔹 Get All Jobs
+---
 
+### 🔗 Postman API Testing (Before Security)
+
+🔹 Get All Jobs  
 ![Get All Jobs](screenshots/postman/get-all-jobs.png)
 
-🔹 Get Job By ID
-
+🔹 Get Job By ID  
 ![Get Job By ID](screenshots/postman/get-job-by-id.png)
 
-🔹 Search Job By Keyword
-
+🔹 Search Job By Keyword  
 ![Search Job By Keyword](screenshots/postman/get-job-by-keyword.png)
 
-🔹 Add New Job
-
+🔹 Add New Job  
 ![Add New Job](screenshots/postman/add-job.png)
 
-🔹 Update Existing Job
+🔹 Update Existing Job  
+![Update Job](screenshots/postman/update-job.png)
 
-![Update Existing Job](screenshots/postman/update-job.png)
-
-🔹 Delete Job
-
+🔹 Delete Job  
 ![Delete Job](screenshots/postman/delete-job.png)
 
-🔹 Initial Data Load
-
+🔹 Initial Data Load  
 ![Initial Data Load](screenshots/postman/app-initial-data.png)
+
+---
+
+### 🔐 Security Implementation Proof (Spring Security)
+
+🔹 API Access **Before** Basic Authentication  
+![Before Basic Auth](screenshots/security/before-basic-auth.png)
+
+🔹 API Access **After** Enabling Basic Authentication  
+![After Basic Auth](screenshots/security/after-basic-auth.png)
+
+🔹 User Registration (Public Endpoint – No Auth Required)  
+![Register User](screenshots/security/register-user.png)
+
+🔹 Encrypted Password Stored in Database (BCrypt)  
+![Encrypted Password DB](screenshots/security/db-table.png)
+
+> Passwords are **never stored in plain text**.  
+> BCrypt hashing is applied during user registration.
+
+---
 
 ### ⚛️ React Frontend Connected (API Integration Proof)
 
-🏠 Job List Page
-
+🏠 Job List Page  
 ![Job List Page](screenshots/react/job-list.png)
 
-➕ Add New Job
-
+➕ Add New Job  
 ![Add New Job](screenshots/react/add-new-job.png)
 
-✏ Update Job
-
+✏ Update Job  
 ![Update Job](screenshots/react/update-job.png)
 
-❌ Job List After Delete
-
+❌ Job List After Delete  
 ![Job List After Delete](screenshots/react/job-list-after-delete.png)
 
-🔍 Keyword Search
-
+🔍 Keyword Search  
 ![Keyword Search](screenshots/react/keyword-search.png)
 
-> React frontend is used only for testing API integration.
-> Frontend code is intentionally **not included** in this repository
-> to keep the focus on backend development.
+> React frontend was **provided as part of the course** and used only  
+> to test API integration after backend & security implementation.  
+> Frontend source code is **not included** to keep this repository backend-focused.
+
 
 ---
 
@@ -141,7 +178,8 @@ React UI / Postman
 - ORM: Hibernate (via Spring Data JPA)
 - DDL Mode: `update`
 
-Sensitive credentials (like DB password) are **hidden using environment variables**.
+Sensitive credentials (such as database passwords) are **not hardcoded**  
+and are managed using **environment variables**.
 
 ---
 
@@ -153,26 +191,30 @@ Database password is stored as an environment variable and not committed to GitH
 ```
 
 ## 🧪 Testing Strategy
-- All APIs tested using Postman
 
-- CRUD operations verified with PostgreSQL
+- All REST APIs tested using Postman
 
-- API behavior verified via React frontend
+- CRUD operations verified directly in PostgreSQL
 
-- Proper HTTP methods and responses used
+- API behavior validated through React frontend integration
+
+- Proper HTTP methods and response codes followed
+
+- Security behavior tested before and after enabling Basic Authentication
 
 ## 🔁 Learning Progression
-###  This project is a continuation of:
+
+### This project represents a clear learning progression:
 
 #### ➡ Spring MVC + JSP Job Portal (Initial Phase)
-#### ➡ Migrated to REST APIs
-#### ➡ Database layer added using JPA + PostgreSQL
-#### ➡ Frontend-backend separation using React
-
-Each phase is maintained in separate repositories to clearly show learning growth.
+#### ➡ Migration to RESTful APIs using Spring Boot
+#### ➡ Database integration using Spring Data JPA + PostgreSQL
+#### ➡ Frontend-backend separation using React (external frontend)
+#### ➡ Securing APIs using Spring Security (Basic Auth + BCrypt)
 
 ## 🚀 Project Status
 ##### ✅ REST APIs implemented
 ##### ✅ PostgreSQL integration completed
 ##### ✅ React & Postman tested
+##### ✅ Spring Security added (Basic Auth + BCrypt)
 ##### ✅ Backend learning objectives achieved
